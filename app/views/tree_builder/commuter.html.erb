@@ -1,0 +1,16 @@
+<!doctype html>
+<html>
+    <head>
+    </head>
+    <body>
+    	<h2 align="center"><%= button_to "Back", tree_builder_path, method: :get, params: { str: @string },  class: 'button' %></h2>
+    	<h1 align="center">Input String: <%= @string %></h1>
+    	<h3 align="center"><p style="color: red;">Result sorted expression</p> <%= @out_res_str %> </h3>
+    	<h1 align="center">SHUFFLE</h1>
+    	<% i = 1 %>
+    	<% @out_res_shuffle.each do |t| %>
+    		<h3 align="center"><p style="color: red;">Result <%= i %></p> <%= t %></h3>
+    		<% i += 1 %>
+    	<% end %>
+    </body>
+</html>
