@@ -69,7 +69,7 @@ class TreeB
 			priorities = set_priority(cut_string)
 			cycle_exp = stage_builder(priorities,cut_string)
 		end
-		@array_of_hash_tree
+		
 		vars = partition_expr(@expression)
 		vars.each {|elm| @all_vars << elm if elm !~ /[\(\\)*+\\\/-]/ }
 	end
@@ -317,3 +317,8 @@ class TreeB
 		return res.join("+")
 	end
 end
+
+# str = "x/z+2+4*x+b+g/sol/t2+r+m*n*32+y/f-1/2/3"
+# tree = TreeB.new(str)
+# puts tree.array_of_hash_tree
+# p tree.all_vars

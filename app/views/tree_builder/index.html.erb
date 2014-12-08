@@ -3,11 +3,11 @@
     <head>
     </head>
     <body>
-    <h1 align="center">Tree Builder</h1>
+    <h1 align="center" class="main_text">Tree Builder</h1>
     <div align="center">
         <%= form_tag tree_builder_parcer_path, method: :get do %>
             <%= text_field :myform, :field, :cols => '40', :rows => '5', :value => @string %>
-            <%= submit_tag 'Check' %>
+            <%= submit_tag 'Check', class: "button" %>
         <% end %>
 	</div>
     </body>

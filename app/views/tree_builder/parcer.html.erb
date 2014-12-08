@@ -4,20 +4,20 @@
     </head>
     <body>
     <h2 align="center"><%= button_to "Back", tree_builder_path, method: :get, params: { str: @string }, class: 'button' %></h2>
-    <h1 align="center"><%= @string %></h1>
+    <h1 align="center" class="string"><%= @string %></h1>
     <div align="center">
     	<% if File.zero?(@location) %>
-            <h1 align="center">Drow Tree</h1>
+            <h1 align="center" class="secondary_text">Drow Tree</h1>
     		<%= button_to 'DROW', tree_builder_build_path, method: :get, params: { str: @string },  class: 'button' %>
-    		<h1 align="center">Commutation</h1>
+    		<h1 align="center" class="secondary_text">Commutation</h1>
     		<%= form_tag tree_builder_commuter_path, method: :get do %>
                 <%= hidden_field_tag "string", @string %>
                 <%= submit_tag 'Commute',  class: 'button' %>
             <% end %>
-            <h1>Bracketing</h1>
+            <h1 class="secondary_text">Bracketing</h1>
             <%= button_to "Bracketing", tree_builder_bracketing_path, method: :get, params: { str: @string },  class: 'button' %>
-            <h1>Vector Processor</h1>
-            <%= button_to "Vector Processor", tree_builder_vector_processor_path, method: :get,  class: 'button' %>
+            <h1 class="secondary_text">Vector Processor</h1>
+            <%= button_to "Vector Processor", tree_builder_vector_processor_path, method: :get, params: { str: @string }, class: 'button' %>
     	<% end %>
 		</div>
 			<pre><%= render :file => @location %></pre>

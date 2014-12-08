@@ -1,5 +1,5 @@
-window.onload = init;
-function init() {
+window.addEventListener('load', function (){
+
     var tree = document.getElementById("tree"),
     context = tree.getContext('2d');
     tree.height = 200*(gon.hashes.length+1);
@@ -80,4 +80,67 @@ function init() {
 		context.stroke();
 
 	}
+	
+
+});
+
+window.addEventListener('load', function (){
+
+	var vector = document.getElementById("vector_processor"),
+	context = vector.getContext('2d');
+	var array = gon.vector_diagram
+	var array_max = gon.array_height
+	var array_wid = gon.array_width
+	vector.height = array_max * 50;
+	vector.width  = array_wid * 50;
+	var x = 40
+	var y = 40
+
+
+	console.log(array)
+
+for (i=0; i < array.length; i++){
+	for (j=0; j < array_max; j++){
+		if (array[i][j] != null && array[i][j] != "   " ) {
+			context.beginPath();
+	    context.rect(x, y, 40, 40);
+	    context.fillStyle = 'green';
+	    context.fill();
+	    context.lineWidth = 3;
+	    context.strokeStyle = 'black';
+	    context.stroke();
+	    context.font="14px Georgia";
+	   	context.fillStyle = 'black';
+	   	context.fillText(array[i][j],x+8,y+20);
+	    y = y + 40;
+	  }
+	  else if (array[i][j] == null ) {
+	  	context.beginPath();
+	    context.rect(x, y, 40, 40);
+	    context.fillStyle = 'yellow';
+	    context.fill();
+	    context.lineWidth = 3;
+	    context.strokeStyle = 'black';
+	    context.stroke();
+	    y = y + 40;
+    }
+    else if (array[i][j] == "   "){
+    	context.beginPath();
+	    context.rect(x, y, 40, 40);
+	    context.fillStyle = 'yellow';
+	    context.fill();
+	    context.lineWidth = 3;
+	    context.strokeStyle = 'black';
+	    context.stroke();
+	    y = y + 40;	
+    }
+  }
+  x = x + 40;
+  y = 40
 }
+
+
+
+
+});
+

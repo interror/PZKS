@@ -2,6 +2,8 @@ class TreeBuilderController < ApplicationController
 require 'treeb'
 require 'parcer'
 require 'commuter'
+require 'vector_processor'
+require 'token'
 
   def build
   	@string = params["str"]
@@ -68,7 +70,16 @@ require 'commuter'
   end
 
   def vector_processor
-    @work = "work"
+    @string = params["str"]
+    tasks = TreeB.new(@string)
+    array_of_tops = tasks.array_of_hash_tree
+    array_of_vars = tasks.all_vars
+    vector = VectorProcessor.new(array_of_tops, array_of_vars)
+    gon.vector_diagram = vector.model
+    max = vector.model.map {|elm| elm.length}
+    max = max.max
+    p gon.array_height = max
+    p gon.array_width = vector.model.length
   end
 
 end
