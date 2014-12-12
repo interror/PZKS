@@ -88,59 +88,73 @@ window.addEventListener('load', function (){
 
 	var vector = document.getElementById("vector_processor"),
 	context = vector.getContext('2d');
-	var array = gon.vector_diagram
-	var array_max = gon.array_height
-	var array_wid = gon.array_width
-	vector.height = array_max * 50;
-	vector.width  = array_wid * 50;
-	var x = 40
-	var y = 40
-
-
-	console.log(array)
+	var array = gon.model;
+	var height_model = gon.length_model;
+	var width_model = gon.width_model;
+	vector.height = height_model * 40;
+	vector.width  = width_model * 40;
+	var x = 32
+	var y = 32
+	var digits_array = ["Sum1","Sum2","Mul1","Mul2","Mul3","Div1","Div2"]
+	
+	function isInteger(x) {
+    return Math.round(x) === x;
+	}
+y = 64
+for (i=0; i < gon.count.length; i++){
+	context.beginPath();
+	    context.rect(x, y, 32, 32);
+	    context.fillStyle = 'orange';
+	    context.fill();
+	    context.lineWidth = 3;
+	    context.strokeStyle = 'black';
+	    context.stroke();
+	    context.font="16px Georgia";
+		  context.fillStyle = 'black';
+		  context.fillText(gon.count[i],x+6,y+20);
+	    y = y + 32;	
+}
+y = 32
+x = x + 42
 
 for (i=0; i < array.length; i++){
-	for (j=0; j < array_max; j++){
-		if (array[i][j] != null && array[i][j] != "   " ) {
-			context.beginPath();
-	    context.rect(x, y, 40, 40);
-	    context.fillStyle = 'green';
-	    context.fill();
-	    context.lineWidth = 3;
-	    context.strokeStyle = 'black';
-	    context.stroke();
-	    context.font="14px Georgia";
-	   	context.fillStyle = 'black';
-	   	context.fillText(array[i][j],x+8,y+20);
-	    y = y + 40;
-	  }
-	  else if (array[i][j] == null ) {
-	  	context.beginPath();
-	    context.rect(x, y, 40, 40);
-	    context.fillStyle = 'yellow';
-	    context.fill();
-	    context.lineWidth = 3;
-	    context.strokeStyle = 'black';
-	    context.stroke();
-	    y = y + 40;
-    }
-    else if (array[i][j] == "   "){
-    	context.beginPath();
-	    context.rect(x, y, 40, 40);
-	    context.fillStyle = 'yellow';
-	    context.fill();
-	    context.lineWidth = 3;
-	    context.strokeStyle = 'black';
-	    context.stroke();
-	    y = y + 40;	
-    }
+	context.beginPath();
+	context.font="25px Georgia";
+	context.fillStyle = 'black';
+	context.fillText(digits_array[i],x+4,y+20);
+	y = y + 32;
+	for (j=0; j < array[i].length; j++){
+		for (k=0; k < array[i][j].length; k++){
+			if (array[i][j][k] != null){
+				context.beginPath();
+		    context.rect(x, y, 32, 32);
+		    context.fillStyle = 'green';
+		    context.fill();
+		    context.lineWidth = 3;
+		    context.strokeStyle = 'black';
+		    context.stroke();
+		    context.font="14px Georgia";
+		   	context.fillStyle = 'black';
+		   	context.fillText(array[i][j][k],x+4,y+20);
+		    y = y + 32;
+	    }
+	    else if (array[i][j][k] == null){
+		    context.beginPath();
+		    context.rect(x, y, 32, 32);
+		    context.fillStyle = 'yellow';
+		    context.fill();
+		    context.lineWidth = 3;
+		    context.strokeStyle = 'black';
+		    context.stroke();
+		    y = y + 32;
+	    }
+	 	}
+	 	y = 64
+	 	x = x + 32
   }
-  x = x + 40;
-  y = 40
+  x = x + 10;
+  y = 32
 }
-
-
-
 
 });
 

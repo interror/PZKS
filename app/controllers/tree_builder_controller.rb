@@ -72,14 +72,52 @@ require 'token'
   def vector_processor
     @string = params["str"]
     tasks = TreeB.new(@string)
-    array_of_tops = tasks.array_of_hash_tree
+    @array_of_tops = tasks.array_of_hash_tree
     array_of_vars = tasks.all_vars
-    vector = VectorProcessor.new(array_of_tops, array_of_vars)
-    gon.vector_diagram = vector.model
-    max = vector.model.map {|elm| elm.length}
-    max = max.max
-    p gon.array_height = max
-    p gon.array_width = vector.model.length
+    vector = VectorProcessor.new(@array_of_tops, array_of_vars)
+    gon.model = vector.model
+    gon.width_model = gon.model.inject(0) {|mem, elm| mem += elm.length }
+    gon.length_model = vector.length_layer
+    gon.count = (1..gon.length_model).to_a
+  end
+
+  def all_results
+    @string = params['str']
+    commute_operation = Commute.new(@string)
+    @out_res_shuffle = commute_operation.res_shuffle
+    if @string =~ /\(/
+      @out_result = []
+      @out_result[0] = "ERROR! Wrong expression"
+    else
+      location = "#{Rails.root}/public/jars/"
+      args1= @string
+      args2 = "1"
+      Dir.chdir("#{location}") do
+        retResult  = system("java -jar PZKS.jar #{args1} #{args2} > out.txt")
+      end
+      @out_result = ""
+      File.open("#{location}out.txt", "r") do |f|
+        f.each_line do |line|
+          @out_result = @out_result + line
+        end
+      end
+      @out_result = @out_result.split(";")
+      for i in 0..@out_result.length-1
+        @out_result[i] = @out_result[i].split(".0").join
+      end
+      @out_result.delete_at(-1)
+    end
+    @array_of_max = []
+    @array_of_strings = @out_result + @out_res_shuffle
+    
+    @array_of_strings.each do |string_elm|
+      tasks = TreeB.new(string_elm)
+      array_of_tops = tasks.array_of_hash_tree
+      array_of_vars = tasks.all_vars
+      vector = VectorProcessor.new(array_of_tops, array_of_vars)
+      max = vector.length_layer
+      @array_of_max << max
+    end
   end
 
 end

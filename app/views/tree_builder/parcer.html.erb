@@ -18,6 +18,8 @@
             <%= button_to "Bracketing", tree_builder_bracketing_path, method: :get, params: { str: @string },  class: 'button' %>
             <h1 class="secondary_text">Vector Processor</h1>
             <%= button_to "Vector Processor", tree_builder_vector_processor_path, method: :get, params: { str: @string }, class: 'button' %>
+            <h1 class="secondary_text">Vector Processor ALL </h1>
+            <%= button_to "Vector Processor", tree_builder_all_results_path, method: :get, params: { str: @string }, class: 'button' %>
     	<% end %>
 		</div>
 			<pre><%= render :file => @location %></pre>

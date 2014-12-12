@@ -6,14 +6,10 @@
 		<h1 align="center">Vector Processor</h2>
 		<h1 align="center" >Input String: <%= @string %></h1>
 		<div align="center">
-		<div id="table">
-			<%@array_of_tops.each do |var| %>
-				<% var.each do |key, val|%>
-					<h3><%= "#{key} = #{val}" %></br></h3>
-				<% end %>
-			<% end %>
-		</div>
-		<canvas id="vector_processor"></canvas>
+		<h2 style="color: red;">Top Result <%= @array_of_max.min %></h2>
+		<% for i in 0..@array_of_strings.length-1 %>
+			<h2><%= @array_of_strings[i] + " - " + @array_of_max[i].to_s %></h2>
+		<% end %>
 		</div>
 	</body>
 </html>

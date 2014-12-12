@@ -7,7 +7,13 @@
     	<h1 align="center">Input String: <%= @string %></h1>
     	<% counter = 1 %>
     	<% @out_result.each do |t| %>
-            <h3 align="center"><p style="color: red;">Result <%= counter %></p> <%= t %></h3>
+            <h3 align="center">
+            <p style="color: red;">Result <%= counter %></p><%= t %>
+            <div class="div_pos">
+                <%= button_to 'DROW', tree_builder_build_path, method: :get, params: { str: t },  class: 'button btn_pos' %>
+                <%= button_to "Vector Processor", tree_builder_vector_processor_path, method: :get, params: { str: t }, class: 'button btn_pos' %></br>
+            </div>
+            </h3>
             <% counter += 1 %>
         <% end %>
     </body>

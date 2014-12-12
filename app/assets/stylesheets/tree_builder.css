@@ -70,3 +70,16 @@ text-shadow:0px 0px 0 rgb(221,139,-24),0px 1px 0 rgb(206,124,-39),0px 2px 0 rgb(
 #vector_processor {
 	margin: 10px auto;
 }
+
+#table {
+	float: left;
+	margin-top: 80px;
+}
+
+.btn_pos{
+	float: left;
+}
+.div_pos{
+	margin: 1px auto;
+	width: 325px;
+}

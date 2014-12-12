@@ -10,6 +10,10 @@
     	<% i = 1 %>
     	<% @out_res_shuffle.each do |t| %>
     		<h3 align="center"><p style="color: red;">Result <%= i %></p> <%= t %></h3>
+            <div class="div_pos">
+                <%= button_to 'DROW', tree_builder_build_path, method: :get, params: { str: t },  class: 'button btn_pos' %>
+                <%= button_to "Vector Processor", tree_builder_vector_processor_path, method: :get, params: { str: t }, class: 'button btn_pos' %></br>
+            </div></br>
     		<% i += 1 %>
     	<% end %>
     </body>

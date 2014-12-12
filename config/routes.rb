@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   get 'tree_builder/bracketing'
   get 'tree_builder/vector_processor'
   post 'tree_builder/parcer'
+  get 'tree_builder/all_results'
   
 
   # The priority is based upon order of creation: first created -> highest priority.

@@ -1,8 +1,6 @@
-
-
 class VectorProcessor
 
-	attr_accessor :input_hash, :model
+	attr_accessor :input_hash, :model, :length_layer
 
 	def initialize(hash_tops,array_vars)
 		@input_hash = hash_tops
@@ -18,12 +16,35 @@ class VectorProcessor
 		create_tokens_value
 		#show_tokens
 		work_model
-		show_work_model
+		#show_name_value
+		@length_layer = max_length_layer
+		add_nil_to_the_end(@length_layer)
+		#show_work_model
+	end
+
+	def max_length_layer
+		max_elemetn = []
+		for i in 0..@model.length-1
+			for j in 0..@model[i].length-1	
+				max_elemetn << @model[i][j].length
+			end
+		end
+		return max_elemetn = max_elemetn.max
+	end
+
+	def add_nil_to_the_end(max_elemetn)
+		for i in 0..@model.length-1
+			for j in 0..@model[i].length-1	
+				@model[i][j].insert(max_elemetn, nil)
+				@model[i][j].pop
+			end
+		end
 	end
 
 	def work_model
-		#MODEL     +   +   *   *   *   /   /
-		@model = [[ ],[ ],[ ],[ ],[ ],[ ],[ ]]
+		@model = [[[],[]],[[],[]],
+							[[],[],[],[]],[[],[],[],[]],[[],[],[],[]],
+							[[],[],[],[],[],[]],[[],[],[],[],[],[]]]
 		work_array = []
 		@array_of_tokens.each {|elm| work_array << elm }
 		work_array.flatten!
@@ -31,153 +52,166 @@ class VectorProcessor
 		backup_array = work_array
 
 		while all_is_ready?(work_array) == false
+			array_of_mul = get_mult_operations(backup_array)
+			array_of_sum = get_sum_operations(backup_array)
+			array_of_div = get_div_operations(backup_array)
 			#Add tasks to sumators (Count = 2)
-			sumator_task_push(backup_array,0)
-			sumator_task_push(backup_array,1)
-			#Add tasks to multiplexers (Count = 3)
-			multiplexer_task_push(backup_array,2)
-			multiplexer_task_push(backup_array,3)
-			multiplexer_task_push(backup_array,4)
-			#Add tasks to divider (Count = 2)
-			divider_task_push(backup_array,5)
-			divider_task_push(backup_array,6)
-			
-			for i in 0..@model.length-1
-				for j in 0..@model[i].length-1
-					if @model[i][j] == nil
-						@model[i][j] = "   "
-					end
+			unless array_of_sum.empty?
+				sum_num = 0
+				array_of_sum.each do |token|
+					sumator_task_push(token,sum_num)
+					sum_num += 1
+					sum_num = 0 if sum_num > 1
 				end
 			end
-		
-			#show_work_model
+			#Add tasks to multiplexers (Count = 3)
+			unless array_of_mul.empty?
+				mul_num = 2
+				array_of_mul.each do |token|
+					multiplexer_task_push(token,mul_num)
+					mul_num += 1
+					mul_num = 2 if mul_num > 4
+				end
+			end
+			#Add tasks to divider (Count = 2)
+			unless array_of_div.empty?
+				div_num = 5
+				array_of_div.each do |token|
+					divider_task_push(token,div_num)
+					div_num += 1
+					div_num = 5 if div_num > 6
+				end		
+			end
 		end
 		#show_work_model
 	end
 
-	def divider_task_push(backup_array,div_num)
-		for i in 0..backup_array.length-1
-			token = backup_array[i]
-			if (token.value[1] == "/") && (token.value.first.status == "ready" && token.value.last.status)
-				position = [token.value.first.level,token.value.last.level].max
-				if position <= @model[div_num].length && @model[div_num][position] != "   "
-					@model[div_num] << token.name << token.name << token.name << token.name << token.name << token.name
-					token.status = "ready"
-					token.level = @model[div_num].length
-					backup_array.delete_at(i)
-					break
-				elsif position <= @model[div_num].length && (@model[div_num][position] == "   " && @model[div_num][position+5] == "   ")
-					a = token.name
-					@model[div_num][position] = a
-					@model[div_num][position+1] = a
-					@model[div_num][position+2] = a
-					@model[div_num][position+3] = a
-					@model[div_num][position+4] = a
-					@model[div_num][position+5] = a
-					token.status = "ready"
-					token.level = position+6
-					backup_array.delete_at(i)
-					break	
-				elsif position > @model[div_num].length
-					a = token.name
-					@model[div_num].insert(position, a, a, a, a, a, a)
-					token.status = "ready"
-					token.level = @model[div_num].length
+	def get_div_operations(backup_array)
+		operations = backup_array.count{|token| token.value[1] == "/" && (token.value.first.status == "ready" && token.value.last.status == "ready") }
+		array_of_tasks = []
+		while operations > array_of_tasks.length
+			for i in 0..backup_array.length-1
+				token = backup_array[i]
+				if token.value[1] == "/" && (token.value.first.status == "ready" && token.value.last.status == "ready")
+					array_of_tasks << token
 					backup_array.delete_at(i)
 					break
 				end
 			end
 		end
+		return array_of_tasks
+	end
+
+	def get_mult_operations(backup_array)
+		operations = backup_array.count{|token| token.value[1] == "*" && (token.value.first.status == "ready" && token.value.last.status == "ready") }
+		array_of_tasks = []
+		while operations > array_of_tasks.length
+			for i in 0..backup_array.length-1
+				token = backup_array[i]
+				if token.value[1] == "*" && (token.value.first.status == "ready" && token.value.last.status == "ready")
+					array_of_tasks << token
+					backup_array.delete_at(i)
+					break
+				end
+			end
+		end
+		return array_of_tasks
+	end
+
+	def get_sum_operations(backup_array)
+		operations = backup_array.count{|token| (token.value[1] == "-" || token.value[1] == "+") && (token.value.first.status == "ready" && token.value.last.status == "ready") }
+		array_of_tasks = []
+		while operations > array_of_tasks.length
+			for i in 0..backup_array.length-1
+				token = backup_array[i]
+				if (token.value[1] == "-" || token.value[1] == "+") && (token.value.first.status == "ready" && token.value.last.status == "ready")
+					array_of_tasks << token
+					backup_array.delete_at(i)
+					break
+				end
+			end
+		end
+		return array_of_tasks
 	end
 
 
-	def multiplexer_task_push(backup_array, mul_num)
-		#MULTIPLEXER WORK ALGHORITM====================
-		for i in 0..backup_array.length-1
-			token = backup_array[i]
-			if (token.value[1] == "*") && (token.value.first.status == "ready" && token.value.last.status)
-				position = [token.value.first.level,token.value.last.level].max
-				if position <= @model[mul_num].length && @model[mul_num][position] != "   "
-					@model[mul_num] << token.name << token.name << token.name << token.name
-					token.status = "ready"
-					token.level = @model[mul_num].length
-					backup_array.delete_at(i)
-					break
-				elsif position <= @model[mul_num].length && (@model[mul_num][position] == "   " && @model[mul_num][position+3] == "   ")
-					a = token.name
-					@model[mul_num][position] = a
-					@model[mul_num][position+1] = a
-					@model[mul_num][position+2] = a
-					@model[mul_num][position+3] = a
-					token.status = "ready"
-					token.level = position+4
-					backup_array.delete_at(i)
-					break	
-				elsif position > @model[mul_num].length
-					a = token.name
-					@model[mul_num].insert(position, a, a, a, a)
-					token.status = "ready"
-					token.level = @model[mul_num].length
-					backup_array.delete_at(i)
-					break
-				end
-			end
+
+	def divider_task_push(token,div_num)
+		position = [token.value.first.level, token.value.last.level].max
+		@model[div_num][0]
+		if @model[div_num][0][position] == nil
+			@model[div_num][0][position] = token.name
+			@model[div_num][1][position+1] = token.name
+			@model[div_num][2][position+2] = token.name
+			@model[div_num][3][position+3] = token.name
+			@model[div_num][4][position+4] = token.name
+			@model[div_num][5][position+5] = token.name
+			token.level = position+6
+			token.status = "ready"
+		elsif @model[div_num][0][position] != nil
+			new_position = @model[div_num][0].length
+			@model[div_num][0][new_position] = token.name
+			@model[div_num][1][new_position+1] = token.name
+			@model[div_num][2][new_position+2] = token.name
+			@model[div_num][3][new_position+3] = token.name
+			@model[div_num][4][new_position+4] = token.name
+			@model[div_num][5][new_position+5] = token.name
+			token.level = new_position+6
+			token.status = "ready"
 		end
-		#MULTIPLEXER WORK ALGHORITM====================
+	end
+
+	def multiplexer_task_push(token, mul_num)
+		position = [token.value.first.level, token.value.last.level].max
+		@model[mul_num][0]
+		if @model[mul_num][0][position] == nil
+			@model[mul_num][0][position] = token.name
+			@model[mul_num][1][position+1] = token.name
+			@model[mul_num][2][position+2] = token.name
+			@model[mul_num][3][position+3] = token.name
+			token.level = position+4
+			token.status = "ready"
+		elsif @model[mul_num][0][position] != nil
+			new_position = @model[mul_num][0].length
+			@model[mul_num][0][new_position] = token.name
+			@model[mul_num][1][new_position+1] = token.name
+			@model[mul_num][2][new_position+2] = token.name
+			@model[mul_num][3][new_position+3] = token.name
+			token.level = new_position+4
+			token.status = "ready"
+		end
+	end
+
+	def sumator_task_push(token, sum_num)
+		position = [token.value.first.level, token.value.last.level].max
+		if @model[sum_num][0][position] == nil
+			@model[sum_num][0][position] = token.name
+			@model[sum_num][1][position+1] = token.name
+			token.level = position+2
+			token.status = "ready"
+		elsif @model[sum_num][0][position] != nil
+			new_position = @model[sum_num][0].length
+			@model[sum_num][0][new_position] = token.name
+			@model[sum_num][1][new_position+1] = token.name
+			token.level = position+2
+			token.status = "ready"
+		end
 	end
 
 	def show_work_model
-		model_sign = ["+","+","*","*","*","/","/"]
-		k = 0
-		@model.each do |elm|
-		print "[#{model_sign[k]}]" + " - "
-			elm.each do |top|
-				if top == nil
-					print "[   ]" + "\t"
-				else
-					print "[#{top}]" + "\t"
+		for i in 0..@model.length-1
+			for j in 0..@model[i].length-1
+				
+				@model[i][j].each do |elm|
+					print "[   ]"if elm == nil
+					print "[#{elm}]"if elm != nil
 				end
+				print "\n"
 			end
-			print "\n"
-			k += 1
 		end
 	end
 
- 	def sumator_task_push(backup_array, sum_num)
-		#SUMATOR WORK ALGHORITM====================
-		for i in 0..backup_array.length-1
-			token = backup_array[i]
-			if (token.value[1] == "-" || token.value[1] == "+") && (token.value.first.status == "ready" && token.value.last.status)
-				position = [token.value.first.level,token.value.last.level].max
-				if position <= @model[sum_num].length && @model[sum_num][position] != "   "
-					@model[sum_num] << token.name << token.name
-					token.status = "ready"
-					token.level = @model[sum_num].length
-					backup_array.delete_at(i)
-					break
-				elsif position <= @model[sum_num].length && @model[sum_num][position] == "   "
-					a = token.name
-					@model[sum_num][position] = a
-					@model[sum_num][position+1] = a
-					token.status = "ready"
-					token.level = position+2
-					backup_array.delete_at(i)
-					break	
-				elsif position > @model[sum_num].length
-					a = token.name
-					@model[sum_num].insert(position, a, a)
-					token.status = "ready"
-					token.level = @model[sum_num].length
-					backup_array.delete_at(i)
-					break
-				end
-			end
-		end
-		#SUMATOR WORK ALGHORITM=====================
-	end
-
-
-
+ 	
 	def all_is_ready?(array)
 		all_tokens = array.length
 		ready_counter = 0
@@ -299,9 +333,10 @@ class VectorProcessor
 
 end
 
-# str = "x/z+2+4*x+b+g/sol/t2+r+m*n*32+y/f-1/2/3"
-# str = "y+2+a+b-d*x*r+y/z+y/3+z/2"
-# str = "a*b+c*d*k+l*m*n+2+r/2*3"
+#str = "x/z+2+4*x+b+g/sol/t2+r+m*n*32+y/f-1/2/3"
+#str = "y+2+a+b-d*x*r+y/z+y/3+z/2"
+#str = "2+2-a*b+c*d*k*l*m*n*n/h+t/2"
+#str = "2+k+r+b+r+c+r*t+(b-c*2*3)"
 # tasks = TreeB.new(str)
 # array_of_tops = tasks.array_of_hash_tree
 # array_of_vars = tasks.all_vars
